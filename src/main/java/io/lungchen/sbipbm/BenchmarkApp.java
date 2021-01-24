@@ -13,7 +13,8 @@ public class BenchmarkApp {
     public static void main(String[] args) {
 
         Integer numOfAccounts = 2;
-        Integer numOfRequests = 10000;
+        Integer numOfRequests = 100;
+        Integer numOfTests = 10;
         // create a few accounts
         ArrayList<Account> accounts = new ArrayList<Account>();
 
@@ -60,11 +61,12 @@ public class BenchmarkApp {
         y.add(0.0);
 
         // Create Chart
-        XYChart chart = new XYChartBuilder().title("Benchmark").height(400).width(600).theme(Styler.ChartTheme.Matlab).yAxisTitle("Response Time (ms)").build();
-        chart.addSeries("rtt", y);
+        XYChart chart = new XYChartBuilder().height(400).width(600).theme(Styler.ChartTheme.GGPlot2).yAxisTitle("Round-trip Time (ms)").build();
+        chart.addSeries("get-balance", y);
 
         // Show it
         SwingWrapper<XYChart> sw = new SwingWrapper<XYChart>(chart);
+        sw.setTitle("Benchmark");
         sw.displayChart();
 
         // get-balance operation
@@ -95,11 +97,11 @@ public class BenchmarkApp {
                         y.add(timeElapsed.doubleValue());
 
                         // Limit the total number of points
-                        while (y.size() > 50) {
+                        while (y.size() > 30) {
                             y.remove(0);
                         }
 
-                        chart.updateXYSeries("rtt", null, y, null);
+                        chart.updateXYSeries("get-balance", null, y, null);
                         sw.repaintChart();
 
 
@@ -109,11 +111,17 @@ public class BenchmarkApp {
             System.exit(1);
         }
 
-        try {
-            Thread.sleep(5000);
-        } catch (Exception e) {
-            e.getMessage();
-        }
+        ArrayList<Double> y1 = new ArrayList<>();
+        y1.add(0.0);
+
+        // Create Chart
+        XYChart chart1 = new XYChartBuilder().height(400).width(600).theme(Styler.ChartTheme.GGPlot2).yAxisTitle("Round-trip Time (ms)").build();
+        chart1.addSeries("send", y1);
+
+        // Show it
+        SwingWrapper<XYChart> sw1 = new SwingWrapper<XYChart>(chart1);
+        sw1.setTitle("Benchmark");
+        sw1.displayChart();
 
 
         // transfer from one account to another account
@@ -136,20 +144,70 @@ public class BenchmarkApp {
                 Long endTime = System.nanoTime();
                 Long timeElapsed = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
 
-                y.add(timeElapsed.doubleValue());
+                y1.add(timeElapsed.doubleValue());
 
-                while (y.size() > 50) {
-                    y.remove(0);
+                while (y1.size() > 30) {
+                    y1.remove(0);
                 }
 
-                chart.updateXYSeries("rtt", null, y, null);
-                sw.repaintChart();
+                chart1.updateXYSeries("send", null, y1, null);
+                sw1.repaintChart();
                 ++id;
             }
         } catch (Exception e) {
             System.exit(1);
         }
 
+        try {
+            ArrayList<Double> y2 = new ArrayList<>();
+            y2.add(0.0);
+
+
+            // Create Chart
+            XYChart chart2 = new XYChartBuilder().height(400).width(600).theme(Styler.ChartTheme.GGPlot2).yAxisTitle("TPS").build();
+            chart2.addSeries("throughput", y2);
+
+            // Show it
+            SwingWrapper<XYChart> sw2 = new SwingWrapper<XYChart>(chart2);
+            sw2.setTitle("Benchmark");
+            sw2.displayChart();
+
+            for (int i = 0; i < numOfTests; ++i) {
+                Long startTime = System.nanoTime();
+                for (int j = 0; j < numOfRequests; ++j) {
+                    TransferRequestBody requestBody = new TransferRequestBody();
+
+                    requestBody.setId(id);
+                    requestBody.setTimestamp(System.currentTimeMillis());
+                    requestBody.setKey(Base64.getEncoder().encodeToString(fromAccount.getPublicKey().getEncoded()));
+                    requestBody.setFrom(fromAccount.getUuid().toString());
+                    requestBody.setTo(toAccount.getUuid().toString());
+                    requestBody.setAmount(1.0);
+                    requestBody.setSignature(fromAccount.sign(requestBody.toString()));
+                    requestClient.post("http://localhost:8080/send", requestBody);
+
+                    ++id;
+                }
+
+                Long endTime = System.nanoTime();
+
+                Long timeElapsed = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
+
+                y2.add(timeElapsed.doubleValue() / numOfRequests);
+
+                while (y2.size() > 10) {
+                    y2.remove(0);
+                }
+
+                chart2.updateXYSeries("throughput", null, y2, null);
+                sw2.repaintChart();
+                ++id;
+
+            }
+
+        } catch (Exception e) {
+            System.exit(1);
+        }
 
     }
 }
