@@ -30,9 +30,8 @@ public class RequestClient {
                 .method("GET", HttpRequest.BodyPublishers.ofString(requestbody.toJSONString())).build();
 
         httpClient.sendAsync(request,  HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(System.out::println)
-                .join();
+                .thenApplyAsync(HttpResponse::body)
+                .thenAcceptAsync(System.out::println).join();
     }
 
     public void post(String url, RequestBody requestBody) {
@@ -41,19 +40,8 @@ public class RequestClient {
                 .method("POST", HttpRequest.BodyPublishers.ofString(requestBody.toJSONString())).build();
 
         httpClient.sendAsync(request,  HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(System.out::println)
-                .join();
+                .thenApplyAsync(HttpResponse::body)
+                .thenAcceptAsync(System.out::println).join();
     }
 
-    public void post(String url, RequestParams requestParams) {
-        HttpRequest request = HttpRequest.newBuilder(URI.create(url + requestParams.toString()))
-                .header("Content-Type", "application/json")
-                .method("POST", null).build();
-
-        httpClient.sendAsync(request,  HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(System.out::println)
-                .join();
-    }
 }

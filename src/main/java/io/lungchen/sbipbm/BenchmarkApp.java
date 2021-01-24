@@ -13,8 +13,8 @@ public class BenchmarkApp {
     public static void main(String[] args) {
 
         Integer numOfAccounts = 2;
-        Integer numOfRequests = 500;
-        Integer numOfTests = 5;
+        Integer numOfRequests = 40;
+        Integer numOfTests = 10;
         // create a few accounts
         ArrayList<Account> accounts = new ArrayList<Account>();
 
@@ -182,7 +182,7 @@ public class BenchmarkApp {
 //                    requestBody.setKey(Base64.getEncoder().encodeToString(fromAccount.getPublicKey().getEncoded()));
 //                    requestBody.setFrom(fromAccount.getUuid().toString());
 //                    requestBody.setTo(toAccount.getUuid().toString());
-//                    requestBody.setAmount(1.0);
+//                    requestBody.setAmount(0.0);
 //                    requestBody.setSignature(fromAccount.sign(requestBody.toString()));
 //                    requestClient.post("http://localhost:8080/send", requestBody);
 //
@@ -191,9 +191,9 @@ public class BenchmarkApp {
 //
 //                Long endTime = System.nanoTime();
 //
-//                Long timeElapsed = TimeUnit.NANOSECONDS.toSeconds(endTime - startTime);
+//                Long timeElapsed = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
 //
-//                y2.add(numOfRequests / timeElapsed.doubleValue());
+//                y2.add(numOfRequests / timeElapsed.doubleValue() * 1000);
 //
 //                while (y2.size() > 10) {
 //                    y2.remove(0);
@@ -209,5 +209,6 @@ public class BenchmarkApp {
 //            System.exit(1);
 //        }
 
+        System.exit(0);
     }
 }
