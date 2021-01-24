@@ -13,8 +13,8 @@ public class BenchmarkApp {
     public static void main(String[] args) {
 
         Integer numOfAccounts = 2;
-        Integer numOfRequests = 100;
-        Integer numOfTests = 10;
+        Integer numOfRequests = 500;
+        Integer numOfTests = 5;
         // create a few accounts
         ArrayList<Account> accounts = new ArrayList<Account>();
 
@@ -158,56 +158,56 @@ public class BenchmarkApp {
             System.exit(1);
         }
 
-        try {
-            ArrayList<Double> y2 = new ArrayList<>();
-            y2.add(0.0);
-
-
-            // Create Chart
-            XYChart chart2 = new XYChartBuilder().height(400).width(600).theme(Styler.ChartTheme.GGPlot2).yAxisTitle("TPS").build();
-            chart2.addSeries("throughput", y2);
-
-            // Show it
-            SwingWrapper<XYChart> sw2 = new SwingWrapper<XYChart>(chart2);
-            sw2.setTitle("Benchmark");
-            sw2.displayChart();
-
-            for (int i = 0; i < numOfTests; ++i) {
-                Long startTime = System.nanoTime();
-                for (int j = 0; j < numOfRequests; ++j) {
-                    TransferRequestBody requestBody = new TransferRequestBody();
-
-                    requestBody.setId(id);
-                    requestBody.setTimestamp(System.currentTimeMillis());
-                    requestBody.setKey(Base64.getEncoder().encodeToString(fromAccount.getPublicKey().getEncoded()));
-                    requestBody.setFrom(fromAccount.getUuid().toString());
-                    requestBody.setTo(toAccount.getUuid().toString());
-                    requestBody.setAmount(1.0);
-                    requestBody.setSignature(fromAccount.sign(requestBody.toString()));
-                    requestClient.post("http://localhost:8080/send", requestBody);
-
-                    ++id;
-                }
-
-                Long endTime = System.nanoTime();
-
-                Long timeElapsed = TimeUnit.NANOSECONDS.toMillis(endTime - startTime);
-
-                y2.add(timeElapsed.doubleValue() / numOfRequests);
-
-                while (y2.size() > 10) {
-                    y2.remove(0);
-                }
-
-                chart2.updateXYSeries("throughput", null, y2, null);
-                sw2.repaintChart();
-                ++id;
-
-            }
-
-        } catch (Exception e) {
-            System.exit(1);
-        }
+//        try {
+//            ArrayList<Double> y2 = new ArrayList<>();
+//            y2.add(0.0);
+//
+//
+//            // Create Chart
+//            XYChart chart2 = new XYChartBuilder().height(400).width(600).theme(Styler.ChartTheme.GGPlot2).yAxisTitle("QPS").build();
+//            chart2.addSeries("throughput", y2);
+//
+//            // Show it
+//            SwingWrapper<XYChart> sw2 = new SwingWrapper<XYChart>(chart2);
+//            sw2.setTitle("Benchmark");
+//            sw2.displayChart();
+//
+//            for (int i = 0; i < numOfTests; ++i) {
+//                Long startTime = System.nanoTime();
+//                for (int j = 0; j < numOfRequests; ++j) {
+//                    TransferRequestBody requestBody = new TransferRequestBody();
+//
+//                    requestBody.setId(id);
+//                    requestBody.setTimestamp(System.currentTimeMillis());
+//                    requestBody.setKey(Base64.getEncoder().encodeToString(fromAccount.getPublicKey().getEncoded()));
+//                    requestBody.setFrom(fromAccount.getUuid().toString());
+//                    requestBody.setTo(toAccount.getUuid().toString());
+//                    requestBody.setAmount(1.0);
+//                    requestBody.setSignature(fromAccount.sign(requestBody.toString()));
+//                    requestClient.post("http://localhost:8080/send", requestBody);
+//
+//                    ++id;
+//                }
+//
+//                Long endTime = System.nanoTime();
+//
+//                Long timeElapsed = TimeUnit.NANOSECONDS.toSeconds(endTime - startTime);
+//
+//                y2.add(numOfRequests / timeElapsed.doubleValue());
+//
+//                while (y2.size() > 10) {
+//                    y2.remove(0);
+//                }
+//
+//                chart2.updateXYSeries("throughput", null, y2, null);
+//                sw2.repaintChart();
+//                ++id;
+//
+//            }
+//
+//        } catch (Exception e) {
+//            System.exit(1);
+//        }
 
     }
 }
