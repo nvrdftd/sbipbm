@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'io.lungchen'
@@ -18,8 +19,21 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
     testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    compile group: 'org.knowm.xchart', name: 'xchart-parent', version: '3.8.0', ext: 'pom'
     compile group: 'org.knowm.xchart', name: 'xchart', version: '3.8.0'
 
+}
+
+application {
+    mainClass = 'io.lungchen.sbipbm.BenchmarkApp'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'io.lungchen.sbipbm.BenchmarkApp'
+        )
+    }
 }
 
 test {
